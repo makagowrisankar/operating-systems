@@ -1,0 +1,84 @@
+Write a C program to simulate the solution of Classical Process Synchronization Problem
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define BUFFER_SIZE 5
+#define NUM_PRODUCERS 2
+#define NUM_CONSUMERS 2
+
+int buffer[BUFFER_SIZE];
+int count = 0;
+int in = 0;
+int out = 0;
+
+pthread_mutex_t mutex;
+pthread_cond_t full, empty;
+
+void *producer(void *id) {
+    int item;
+    for (int i = 0; i < 5; i++) {
+        item = i;
+        pthread_mutex_lock(&mutex);
+        while (count == BUFFER_SIZE) {
+            pthread_cond_wait(&empty, &mutex);
+        }
+        buffer[in] = item;
+        printf("Producer %d produced item: %d\n", *((int *)id), item);
+        in = (in + 1) % BUFFER_SIZE;
+        count++;
+        pthread_cond_signal(&full);
+        pthread_mutex_unlock(&mutex);
+    }
+}
+
+void *consumer(void *id) {
+    int item;
+    for (int i = 0; i < 5; i++) {
+        pthread_mutex_lock(&mutex);
+        while (count == 0) {
+            pthread_cond_wait(&full, &mutex);
+        }
+        item = buffer[out];
+        printf("Consumer %d consumed item: %d\n", *((int *)id), item);
+        out = (out + 1) % BUFFER_SIZE;
+        count--;
+        pthread_cond_signal(&empty);
+        pthread_mutex_unlock(&mutex);
+    }
+}
+
+int main() {
+    pthread_t producers[NUM_PRODUCERS], consumers[NUM_CONSUMERS];
+    int ids[NUM_PRODUCERS + NUM_CONSUMERS];
+
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&full, NULL);
+    pthread_cond_init(&empty, NULL);
+
+    // Create producer threads
+    for (int i = 0; i < NUM_PRODUCERS; i++) {
+        ids[i] = i;
+        pthread_create(&producers[i], NULL, producer, &ids[i]);
+    }
+
+    // Create consumer threads
+    for (int i = 0; i < NUM_CONSUMERS; i++) {
+        ids[i + NUM_PRODUCERS] = i;
+        pthread_create(&consumers[i], NULL, consumer, &ids[i + NUM_PRODUCERS]);
+    }
+
+    // Join producer threads
+    for (int i = 0; i < NUM_PRODUCERS; i++)
+        pthread_join(producers[i], NULL);
+
+    // Join consumer threads
+    for (int i = 0; i < NUM_CONSUMERS; i++)
+        pthread_join(consumers[i], NULL);
+
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&full);
+    pthread_cond_destroy(&empty);
+
+    return 0;
+}
