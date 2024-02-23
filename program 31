@@ -1,0 +1,59 @@
+Construct a C program to simulate the First in First Out paging technique of memory management.
+#include <stdio.h>
+
+#define MAX_FRAMES 3
+#define MAX_PAGES 20
+
+int main() {
+    int frames[MAX_FRAMES]; // Array to store the frames
+    int pageQueue[MAX_FRAMES]; // Queue to keep track of the order of page arrival
+    int pageFaults = 0;
+    int nextFrameIndex = 0;
+
+    // Initialize frames and pageQueue with -1 to indicate empty slots
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        frames[i] = -1;
+        pageQueue[i] = -1;
+    }
+
+    int pages[MAX_PAGES] = {0, 1, 2, 3, 2, 4, 5, 3, 4, 1, 6, 7, 8, 7, 8, 9, 7, 8, 9, 5};
+
+    // Simulate FIFO paging algorithm
+    for (int i = 0; i < MAX_PAGES; i++) {
+        int page = pages[i];
+        int pageFound = 0;
+
+        // Check if page is already in a frame
+        for (int j = 0; j < MAX_FRAMES; j++) {
+            if (frames[j] == page) {
+                pageFound = 1;
+                break;
+            }
+        }
+
+        // If page is not in a frame, perform page replacement
+        if (!pageFound) {
+            int victimPage = pageQueue[nextFrameIndex];
+
+            frames[nextFrameIndex] = page;
+            pageQueue[nextFrameIndex] = page;
+
+            nextFrameIndex = (nextFrameIndex + 1) % MAX_FRAMES;
+            pageFaults++;
+
+            printf("Page %d inserted into frame %d (Victim page: %d)\n", page, nextFrameIndex - 1, victimPage);
+        } else {
+            printf("Page %d already in memory, no page fault.\n", page);
+        }
+
+        printf("Frames: ");
+        for (int j = 0; j < MAX_FRAMES; j++) {
+            printf("%d ", frames[j]);
+        }
+        printf("\n\n");
+    }
+
+    printf("Total page faults: %d\n", pageFaults);
+
+    return 0;
+}
