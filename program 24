@@ -1,0 +1,68 @@
+Design a C program to demonstrate UNIX system calls for file management.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define BUFFER_SIZE 1024
+
+int main() {
+    int fd; // File descriptor
+    ssize_t numBytes;
+    char buffer[BUFFER_SIZE];
+
+    // Create a new file
+    fd = creat("example.txt", S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("creat");
+        exit(EXIT_FAILURE);
+    }
+    printf("File created successfully.\n");
+
+    // Open the file for writing
+    fd = open("example.txt", O_WRONLY);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    // Write data to the file
+    numBytes = write(fd, "Hello, World!\n", 14);
+    if (numBytes == -1) {
+        perror("write");
+        exit(EXIT_FAILURE);
+    }
+    printf("Data written to file.\n");
+
+    // Close the file
+    if (close(fd) == -1) {
+        perror("close");
+        exit(EXIT_FAILURE);
+    }
+    printf("File closed successfully.\n");
+
+    // Open the file for reading
+    fd = open("example.txt", O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    // Read data from the file
+    numBytes = read(fd, buffer, BUFFER_SIZE);
+    if (numBytes == -1) {
+        perror("read");
+        exit(EXIT_FAILURE);
+    }
+    buffer[numBytes] = '\0'; // Null terminate the buffer
+    printf("Data read from file: %s", buffer);
+
+    // Close the file
+    if (close(fd) == -1) {
+        perror("close");
+        exit(EXIT_FAILURE);
+    }
+    printf("File closed successfully.\n");
+
+    return 0;
+}
