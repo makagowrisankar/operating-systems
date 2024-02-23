@@ -1,6 +1,5 @@
-Deadlock Avoidance with Banker's Algorithm (C Program)
+Illustrate the deadlock avoidance concept by simulating Banker’s algorithm with C. 18 Construct a C program to simulate producer-consumer problem using semaphores.
 #include <stdio.h>
-
 #define P 5 // Number of processes
 #define R 3 // Number of resources
 
