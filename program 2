@@ -1,0 +1,164 @@
+Deadlock Avoidance with Banker's Algorithm (C Program)
+#include <stdio.h>
+
+#define P 5 // Number of processes
+#define R 3 // Number of resources
+
+int available[R] = {3, 3, 2};   // Available resources
+int max[P][R] = {{7, 5, 3},     // Maximum resources that can be allocated to processes
+                 {3, 2, 2},
+                 {9, 0, 2},
+                 {2, 2, 2},
+                 {4, 3, 3}};
+int allocation[P][R] = {{0, 1, 0},  // Resources currently allocated to processes
+                        {2, 0, 0},
+                        {3, 0, 2},
+                        {2, 1, 1},
+                        {0, 0, 2}};
+int need[P][R]; // Resources needed by processes
+
+int finish[P] = {0}; // To track if a process has finished
+
+void calculateNeed() {
+    for (int i = 0; i < P; i++)
+        for (int j = 0; j < R; j++)
+            need[i][j] = max[i][j] - allocation[i][j];
+}
+
+int isSafe() {
+    int work[R];
+    for (int i = 0; i < R; i++)
+        work[i] = available[i];
+
+    int finish[P] = {0};
+
+    int safeSequence[P];
+    int count = 0;
+
+    while (count < P) {
+        int found = 0;
+        for (int p = 0; p < P; p++) {
+            if (finish[p] == 0) {
+                int j;
+                for (j = 0; j < R; j++)
+                    if (need[p][j] > work[j])
+                        break;
+
+                if (j == R) {
+                    for (int k = 0; k < R; k++)
+                        work[k] += allocation[p][k];
+
+                    safeSequence[count++] = p;
+                    finish[p] = 1;
+                    found = 1;
+                }
+            }
+        }
+        if (found == 0) {
+            printf("System is not in safe state\n");
+            return 0;
+        }
+    }
+
+    printf("System is in safe state.\nSafe sequence is: ");
+    for (int i = 0; i < P; i++)
+        printf("%d ", safeSequence[i]);
+    printf("\n");
+    return 1;
+}
+
+int main() {
+    calculateNeed();
+    isSafe();
+    return 0;
+}
+Producer-Consumer Problem Using Semaphores (C Program):
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 5
+#define NUM_PRODUCERS 2
+#define NUM_CONSUMERS 2
+
+int buffer[BUFFER_SIZE];
+int count = 0;
+int in = 0;
+int out = 0;
+
+sem_t mutex, full, empty;
+
+void *producer(void *id) {
+    int item;
+    for (int i = 0; i < 5; i++) {
+        item = i;
+        sem_wait(&empty);
+        sem_wait(&mutex);
+        
+        // Critical Section
+        buffer[in] = item;
+        printf("Producer %d produced item: %d\n", *((int *) id), item);
+        in = (in + 1) % BUFFER_SIZE;
+        count++;
+
+        sem_post(&mutex);
+        sem_post(&full);
+
+        sleep(1); // Simulating some work
+    }
+}
+
+void *consumer(void *id) {
+    int item;
+    for (int i = 0; i < 5; i++) {
+        sem_wait(&full);
+        sem_wait(&mutex);
+        
+        // Critical Section
+        item = buffer[out];
+        printf("Consumer %d consumed item: %d\n", *((int *) id), item);
+        out = (out + 1) % BUFFER_SIZE;
+        count--;
+
+        sem_post(&mutex);
+        sem_post(&empty);
+
+        sleep(2); // Simulating some work
+    }
+}
+
+int main() {
+    pthread_t producers[NUM_PRODUCERS], consumers[NUM_CONSUMERS];
+    int ids[NUM_PRODUCERS + NUM_CONSUMERS];
+
+    sem_init(&mutex, 0, 1);
+    sem_init(&full, 0, 0);
+    sem_init(&empty, 0, BUFFER_SIZE);
+
+    // Create producer threads
+    for (int i = 0; i < NUM_PRODUCERS; i++) {
+        ids[i] = i;
+        pthread_create(&producers[i], NULL, producer, &ids[i]);
+    }
+
+    // Create consumer threads
+    for (int i = 0; i < NUM_CONSUMERS; i++) {
+        ids[i + NUM_PRODUCERS] = i;
+        pthread_create(&consumers[i], NULL, consumer, &ids[i + NUM_PRODUCERS]);
+    }
+
+    // Join producer threads
+    for (int i = 0; i < NUM_PRODUCERS; i++)
+        pthread_join(producers[i], NULL);
+
+    // Join consumer threads
+    for (int i = 0; i < NUM_CONSUMERS; i++)
+        pthread_join(consumers[i], NULL);
+
+    sem_destroy(&mutex);
+    sem_destroy(&full);
+    sem_destroy(&empty);
+
+    return 0;
+}
