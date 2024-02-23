@@ -1,0 +1,54 @@
+Construct a C program to implement best fit algorithm of memory management.
+#include <stdio.h>
+
+#define MAX_MEMORY_BLOCKS 10
+
+int memoryBlocks[MAX_MEMORY_BLOCKS];
+int blockSize[MAX_MEMORY_BLOCKS];
+int processSize;
+
+void bestFit(int memorySize) {
+    int i, j, min = 9999, index = -1;
+    for (i = 0; i < MAX_MEMORY_BLOCKS; i++) {
+        if (blockSize[i] >= processSize) {
+            if (blockSize[i] < min) {
+                min = blockSize[i];
+                index = i;
+            }
+        }
+    }
+
+    if (index == -1) {
+        printf("No memory block is available for process of size %d.\n", processSize);
+    } else {
+        blockSize[index] -= processSize;
+        printf("Process of size %d allocated to block %d.\n", processSize, index);
+    }
+}
+
+int main() {
+    int totalMemory, numBlocks, i;
+
+    printf("Enter the total memory size: ");
+    scanf("%d", &totalMemory);
+
+    printf("Enter the number of memory blocks: ");
+    scanf("%d", &numBlocks);
+
+    printf("Enter the size of each memory block:\n");
+    for (i = 0; i < numBlocks; i++) {
+        scanf("%d", &blockSize[i]);
+        memoryBlocks[i] = i;
+    }
+
+    while (1) {
+        printf("\nEnter the size of the process (-1 to exit): ");
+        scanf("%d", &processSize);
+        if (processSize == -1) {
+            break;
+        }
+        bestFit(totalMemory);
+    }
+
+    return 0;
+}
