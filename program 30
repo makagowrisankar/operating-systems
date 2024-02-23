@@ -1,0 +1,130 @@
+Write C programs to demonstrate the following thread related concepts.
+(i) create (ii) join (iii) equal (iv) exit
+(i) Thread Creation:
+#include <stdio.h>
+#include <pthread.h>
+
+void *printMessage(void *message) {
+    char *msg = (char *)message;
+    printf("%s\n", msg);
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread;
+    char *message = "Hello, I am a thread!";
+
+    pthread_create(&thread, NULL, printMessage, (void *)message);
+
+    // Wait for the thread to finish
+    pthread_join(thread, NULL);
+
+    printf("Thread has completed.\n");
+
+    return 0;
+}
+
+Certainly! Below are C programs demonstrating the thread-related concepts you mentioned: create, join, equal, and exit.
+
+(i) Thread Creation:
+c
+Copy code
+#include <stdio.h>
+#include <pthread.h>
+
+void *printMessage(void *message) {
+    char *msg = (char *)message;
+    printf("%s\n", msg);
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread;
+    char *message = "Hello, I am a thread!";
+
+    pthread_create(&thread, NULL, printMessage, (void *)message);
+
+    // Wait for the thread to finish
+    pthread_join(thread, NULL);
+
+    printf("Thread has completed.\n");
+
+    return 0;
+}
+(ii) Thread Joining
+#include <stdio.h>
+#include <pthread.h>
+
+void *printMessage(void *message) {
+    char *msg = (char *)message;
+    printf("%s\n", msg);
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread;
+    char *message = "Hello, I am a thread!";
+
+    pthread_create(&thread, NULL, printMessage, (void *)message);
+
+    // Wait for the thread to finish
+    pthread_join(thread, NULL);
+
+    printf("Thread has completed.\n");
+
+    return 0;
+}
+(iii) Thread Equality Check:
+#include <stdio.h>
+#include <pthread.h>
+
+void *printMessage(void *message) {
+    char *msg = (char *)message;
+    printf("%s\n", msg);
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread1, thread2;
+    char *message1 = "Thread 1";
+    char *message2 = "Thread 2";
+
+    pthread_create(&thread1, NULL, printMessage, (void *)message1);
+    pthread_create(&thread2, NULL, printMessage, (void *)message2);
+
+    // Wait for the threads to finish
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+
+    // Check if the threads are equal
+    if (pthread_equal(thread1, thread2)) {
+        printf("Threads are equal.\n");
+    } else {
+        printf("Threads are not equal.\n");
+    }
+
+    return 0;
+}
+(iv) Thread Exit:
+#include <stdio.h>
+#include <pthread.h>
+
+void *printMessage(void *message) {
+    char *msg = (char *)message;
+    printf("%s\n", msg);
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread;
+    char *message = "Hello, I am a thread!";
+
+    pthread_create(&thread, NULL, printMessage, (void *)message);
+
+    // Explicitly exit the main thread
+    pthread_exit(NULL);
+
+    printf("This line will not be reached.\n");
+
+    return 0;
+}
