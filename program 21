@@ -1,0 +1,53 @@
+Develop a C program to implement worst fit algorithm of memory management.
+#include <stdio.h>
+
+#define MAX_MEMORY_BLOCKS 10
+
+int memoryBlocks[MAX_MEMORY_BLOCKS];
+int blockSize[MAX_MEMORY_BLOCKS];
+int processSize;
+
+void worstFit(int memorySize) {
+    int i, j, largest = 0;
+    for (i = 0; i < MAX_MEMORY_BLOCKS; i++) {
+        if (blockSize[i] >= processSize) {
+            if (blockSize[i] > blockSize[largest]) {
+                largest = i;
+            }
+        }
+    }
+
+    if (largest == 0 && blockSize[largest] < processSize) {
+        printf("No memory block is available for process of size %d.\n", processSize);
+    } else {
+        blockSize[largest] -= processSize;
+        printf("Process of size %d allocated to block %d.\n", processSize, largest);
+    }
+}
+
+int main() {
+    int totalMemory, numBlocks, i;
+
+    printf("Enter the total memory size: ");
+    scanf("%d", &totalMemory);
+
+    printf("Enter the number of memory blocks: ");
+    scanf("%d", &numBlocks);
+
+    printf("Enter the size of each memory block:\n");
+    for (i = 0; i < numBlocks; i++) {
+        scanf("%d", &blockSize[i]);
+        memoryBlocks[i] = i;
+    }
+
+    while (1) {
+        printf("\nEnter the size of the process (-1 to exit): ");
+        scanf("%d", &processSize);
+        if (processSize == -1) {
+            break;
+        }
+        worstFit(totalMemory);
+    }
+
+    return 0;
+}
