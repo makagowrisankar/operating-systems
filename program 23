@@ -1,0 +1,47 @@
+Construct a C program to implement first fit algorithm of memory management.
+#include <stdio.h>
+
+#define MAX_MEMORY_BLOCKS 10
+
+int memoryBlocks[MAX_MEMORY_BLOCKS];
+int blockSize[MAX_MEMORY_BLOCKS];
+int processSize;
+
+void firstFit(int memorySize) {
+    int i, j;
+    for (i = 0; i < MAX_MEMORY_BLOCKS; i++) {
+        if (blockSize[i] >= processSize) {
+            blockSize[i] -= processSize;
+            printf("Process of size %d allocated to block %d.\n", processSize, i);
+            return;
+        }
+    }
+    printf("No memory block is available for process of size %d.\n", processSize);
+}
+
+int main() {
+    int totalMemory, numBlocks, i;
+
+    printf("Enter the total memory size: ");
+    scanf("%d", &totalMemory);
+
+    printf("Enter the number of memory blocks: ");
+    scanf("%d", &numBlocks);
+
+    printf("Enter the size of each memory block:\n");
+    for (i = 0; i < numBlocks; i++) {
+        scanf("%d", &blockSize[i]);
+        memoryBlocks[i] = i;
+    }
+
+    while (1) {
+        printf("\nEnter the size of the process (-1 to exit): ");
+        scanf("%d", &processSize);
+        if (processSize == -1) {
+            break;
+        }
+        firstFit(totalMemory);
+    }
+
+    return 0;
+}
