@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+#define SHM_SIZE 1024
+
+int main() {
+    pid_t pid;
+    int shmid;
+    void *shared_memory;
+    char *data;
+
+    // Create shared memory segment
+    shmid = shmget(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | 0666);
+    if (shmid == -1) {
+        perror("shmget");
+        exit(EXIT_FAILURE);
+    }
+
+    // Attach the shared memory segment to the address space of the process
+    shared_memory = shmat(shmid, NULL, 0);
+    if (shared_memory == (void *)-1) {
+        perror("shmat");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fork a child process
+    pid = fork();
+
+    if (pid < 0) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) {
+        // Child process (Reader)
+        data = (char *)shared_memory;
+        printf("Reader Process (PID %d) reading data from shared memory: %s\n", getpid(), data);
+    } else {
+        // Parent process (Writer)
+        data = (char *)shared_memory;
+
+        printf("Writer Process (PID %d) writing data to shared memory\n", getpid());
+        strcpy(data, "Hello, Shared Memory!");
+
+        // Wait for the child process to complete
+        wait(NULL);
+
+        // Detach and remove the shared memory segment
+        shmdt(shared_memory);
+        shmctl(shmid, IPC_RMID, NULL);
+    }
+
+    return 0;
+}
