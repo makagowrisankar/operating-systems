@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_BLOCKS 100
+
+int main() {
+    int index_block[MAX_BLOCKS]; // Index block to store pointers
+    char file_data[MAX_BLOCKS][256]; // Simulated file blocks
+    int num_blocks, i;
+
+    printf("Enter the number of blocks in the file: ");
+    scanf("%d", &num_blocks);
+
+    // Reading data for each block
+    printf("Enter data for %d blocks:\n", num_blocks);
+    for (i = 0; i < num_blocks; ++i) {
+        printf("Data for Block %d: ", i + 1);
+        scanf("%s", file_data[i]);
+    }
+
+    // Populating index block
+    printf("\nPopulating index block:\n");
+    for (i = 0; i < num_blocks; ++i) {
+        index_block[i] = i;
+        printf("Index Block Entry %d: %d\n", i + 1, index_block[i]);
+    }
+
+    // Accessing file data using index block
+    printf("\nAccessing file data using index block:\n");
+    for (i = 0; i < num_blocks; ++i) {
+        printf("Block %d Data: %s\n", index_block[i] + 1, file_data[index_block[i]]);
+    }
+
+    return 0;
+}
