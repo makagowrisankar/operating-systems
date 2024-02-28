@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_RECORDS 100
+
+struct Record {
+    int record_id;
+    // Add other fields of the record here
+};
+
+int main() {
+    struct Record records[MAX_RECORDS];
+    int num_records, i;
+
+    printf("Enter the number of records: ");
+    scanf("%d", &num_records);
+
+    // Reading records
+    printf("Enter the details of %d records:\n", num_records);
+    for (i = 0; i < num_records; ++i) {
+        printf("Enter details for Record %d:\n", i + 1);
+        records[i].record_id = i + 1;
+        // Read other fields of the record here
+    }
+
+    // Displaying records
+    printf("\nRecords in the file:\n");
+    printf("Record_ID\n");
+    for (i = 0; i < num_records; ++i) {
+        printf("%d\n", records[i].record_id);
+        // Print other fields of the record here
+    }
+
+    // Simulating access to records
+    printf("\nSimulating access to records:\n");
+    for (i = 0; i < num_records; ++i) {
+        printf("Accessing Record %d: ", i + 1);
+        printf("Record ID: %d\n", records[i].record_id);
+        // Perform operations with the record here
+    }
+
+    return 0;
+}
